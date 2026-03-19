@@ -1,0 +1,411 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Infosys × Pega — Web Embed Demo (Auto-Resize)</title>
+  <meta name="description" content="Safe demo page with co-branded header and a Pega web embed stage + diagnostics." />
+  <style>
+    :root{
+      --infosys:#3781C2;
+      --pega:#00A6A7;
+      --bg:#070b14;
+      --panel:#0f1b33;
+      --text:#e8eefc;
+      --muted:#b8c4e6;
+      --line:rgba(232,238,252,.14);
+      --shadow: 0 18px 50px rgba(0,0,0,.35);
+      --radius: 18px;
+      --radius2: 14px;
+      --max: 1120px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+      color:var(--text);
+      background:
+        radial-gradient(1200px 620px at 15% -10%, rgba(55,129,194,.22), transparent 55%),
+        radial-gradient(1000px 620px at 90% 10%, rgba(0,166,167,.18), transparent 55%),
+        linear-gradient(180deg, #0b1220, var(--bg) 70%);
+      min-height:100vh;
+    }
+    a{color:inherit; text-decoration:none}
+    .wrap{max-width:var(--max); margin:0 auto; padding:18px 18px 70px}
+    /* Top bar */
+    .topbar{
+      display:flex; align-items:center; justify-content:space-between; gap:14px;
+      padding:10px 0 12px;
+    }
+    .header-left{
+      display:flex; align-items:center; gap:14px; flex-wrap:wrap;
+      min-width:0;
+    }
+    /* Co-branded logos block */
+    .brand-logos{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      padding:10px 12px;
+      border:1px solid var(--line);
+      border-radius:14px;
+      background: rgba(232,238,252,.04);
+      box-shadow: 0 10px 24px rgba(0,0,0,.18);
+    }
+    .brand-logos .logo{
+      display:block;
+      filter: drop-shadow(0 8px 16px rgba(0,0,0,.25));
+    }
+    .brand-logos .logo.infosys{
+      height:22px;
+      width:auto;
+    }
+    .brand-logos .logo.pega{
+      height:34px;   /* vertical logo: slightly taller */
+      width:auto;
+    }
+    .brand-logos .divider{
+      width:1px;
+      height:28px;
+      background: rgba(232,238,252,.18);
+    }
+    .logo-fallback{
+      display:none;
+      color: var(--muted);
+      font-weight: 800;
+      letter-spacing: .2px;
+      font-size: 13px;
+    }
+    /* Pills / badges */
+    .brandrow{display:flex; align-items:center; gap:10px; flex-wrap:wrap}
+    .badge{
+      display:inline-flex; align-items:center; gap:10px;
+      padding:8px 12px;
+      border:1px solid var(--line);
+      border-radius:999px;
+      background: rgba(232,238,252,.05);
+      color: var(--muted);
+      font-size:13px;
+    }
+    .dot{
+      width:10px; height:10px; border-radius:999px;
+      background: linear-gradient(135deg, var(--infosys), var(--pega));
+      box-shadow: 0 0 0 3px rgba(232,238,252,.10);
+    }
+    /* Right nav */
+    .nav{display:flex; gap:10px; flex-wrap:wrap}
+    .nav a{
+      padding:8px 10px;
+      border-radius:999px;
+      border:1px solid transparent;
+      color: var(--muted);
+      background: rgba(232,238,252,.02);
+      font-size:13px;
+    }
+    .nav a:hover{
+      border-color: var(--line);
+      color: var(--text);
+      background: rgba(232,238,252,.05);
+    }
+    /* Hero */
+    .hero{
+      margin-top:6px;
+      border:1px solid var(--line);
+      border-radius: var(--radius);
+      background: linear-gradient(180deg, rgba(15,27,51,.78), rgba(15,27,51,.28));
+      box-shadow: var(--shadow);
+      overflow:hidden;
+      position:relative;
+    }
+    .hero::before{
+      content:"";
+      position:absolute; inset:-2px;
+      background:
+        radial-gradient(700px 260px at 15% 10%, rgba(55,129,194,.22), transparent 60%),
+        radial-gradient(700px 260px at 85% 0%, rgba(0,166,167,.18), transparent 60%);
+      pointer-events:none;
+    }
+    .hero-inner{position:relative; padding:22px 20px}
+    .hero h1{
+      margin:10px 0 8px;
+      font-size: clamp(22px, 3.4vw, 38px);
+      line-height:1.1;
+    }
+    .hero p{margin:0; color:var(--muted); line-height:1.6; max-width:82ch}
+    .cta{
+      display:flex; gap:10px; flex-wrap:wrap; margin-top:14px;
+    }
+    .btn{
+      display:inline-flex; align-items:center; gap:10px;
+      padding:10px 12px;
+      border-radius: 12px;
+      border:1px solid var(--line);
+      background: rgba(232,238,252,.06);
+      color:var(--text);
+      cursor:pointer;
+      transition: transform .08s ease, background .15s ease, border-color .15s ease;
+    }
+    .btn:hover{background: rgba(232,238,252,.10); border-color: rgba(232,238,252,.22)}
+    .btn:active{transform: translateY(1px)}
+    .btn.primary{
+      border-color: rgba(55,129,194,.40);
+      background: linear-gradient(135deg, rgba(55,129,194,.22), rgba(0,166,167,.14));
+    }
+    .btn.pega{
+      border-color: rgba(0,166,167,.40);
+      background: linear-gradient(135deg, rgba(0,166,167,.18), rgba(232,238,252,.06));
+    }
+    /* Embed panel */
+    .panel{
+      margin-top:16px;
+      border:1px solid rgba(55,129,194,.30);
+      border-radius: var(--radius);
+      background: rgba(15,27,51,.36);
+      box-shadow: 0 10px 22px rgba(0,0,0,.18);
+      overflow:hidden;
+    }
+    .bar{
+      display:flex; gap:10px; align-items:center; justify-content:space-between;
+      padding:12px 12px;
+      border-bottom:1px solid var(--line);
+      background: rgba(0,0,0,.12);
+    }
+    .bar .title{
+      display:flex; flex-direction:column; gap:2px;
+    }
+    .bar .title b{font-size:14px}
+    .bar .title span{font-size:12px; color:var(--muted)}
+    .toolbar{display:flex; gap:8px; flex-wrap:wrap}
+    .chip{
+      display:inline-flex; align-items:center; gap:8px;
+      padding:8px 10px;
+      border-radius:999px;
+      border:1px solid var(--line);
+      background: rgba(232,238,252,.05);
+      color: var(--text);
+      font-size:12px;
+      cursor:pointer;
+      user-select:none;
+    }
+    .chip:hover{background: rgba(232,238,252,.09)}
+    .stateDot{
+      width:8px; height:8px; border-radius:999px; background:#fbbf24;
+      box-shadow: 0 0 0 3px rgba(251,191,36,.12);
+    }
+    .stateDot.on{background:#34d399; box-shadow: 0 0 0 3px rgba(52,211,153,.12);}
+    .body{padding:14px}
+    
+    /* ===== CHANGE #1: Remove min-height from the stage. ===== */
+    .stage{
+      /* min-height is removed to allow the container to shrink */
+      border:1px dashed rgba(232,238,252,.26);
+      background: rgba(0,0,0,.18);
+      border-radius: 14px;
+      position:relative;
+      overflow:hidden;
+    }
+    #pega-embed-target{width:100%; height:100%;}
+    #pega-embed-iframe{width:100%; height:100%; border:0; display:none;} /* Let parent control height */
+
+    .placeholder{
+      position:absolute; inset:0;
+      display:flex; align-items:center; justify-content:center;
+      padding:18px;
+      text-align:center;
+      color: rgba(184,196,230,.92);
+      min-height: 560px; /* Give placeholder a default size */
+    }
+    .placeholder .inner{max-width:66ch}
+    .placeholder h3{margin:0 0 8px; font-size:16px; color:var(--text)}
+    .placeholder p{margin:0 0 10px; line-height:1.6}
+    .kbd{
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size:12px;
+      padding:2px 6px;
+      border:1px solid var(--line);
+      border-radius: 8px;
+      background: rgba(0,0,0,.18);
+      color: var(--text);
+    }
+    .log{
+      margin-top:12px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size:12px;
+      padding:12px;
+      border:1px solid rgba(232,238,252,.14);
+      border-radius: 12px;
+      background: rgba(0,0,0,.22);
+      white-space:pre-wrap;
+      color:#b8c4e6;
+    }
+    footer{
+      margin-top:16px;
+      color: rgba(184,196,230,.85);
+      font-size:12px;
+      display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap;
+    }
+    @media (max-width: 900px){
+      .nav{display:none}
+    }
+    @media (max-width: 520px){
+      .brand-logos{gap:10px; padding:10px;}
+      .brand-logos .logo.infosys{height:18px;}
+      .brand-logos .logo.pega{height:28px;}
+      .brand-logos .divider{height:24px;}
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="topbar">
+      <div class="header-left">
+        <div class="brand-logos" aria-label="Infosys and Pega logos">
+          <img class="logo infosys" src="https://www.infosys.com/content/dam/infosys-web/en/global-resource/media-resources/infosys-logo-png.png" alt="Infosys" referrerpolicy="no-referrer" onerror="this.style.display='none'; document.getElementById('infosysFallback').style.display='inline';" />
+          <span id="infosysFallback" class="logo-fallback">Infosys</span>
+          <div class="divider" aria-hidden="true"></div>
+          <img class="logo pega" src="https://www.pega.com/sites/default/files/styles/1024/public/media/images/2021-10/pega-logo-horiztonal-reverse-prevcard.png?itok=dK49I3Df" alt="Pega" referrerpolicy="no-referrer" onerror="this.style.display='none'; document.getElementById('pegaFallback').style.display='inline';" />
+          <span id="pegaFallback" class="logo-fallback">Pega</span>
+        </div>
+        <div class="brandrow">
+          <span class="badge"><span class="dot" aria-hidden="true"></span> Alliances</span>
+          <span class="badge">Web Embed Demo</span>
+        </div>
+      </div>
+      <div class="nav">
+        <a href="#demo">Live demo</a>
+        <a href="#diagnostics">Diagnostics</a>
+        <a href="https://www.infosys.com/about/alliances/pegasystems.html" target="_blank" rel="noreferrer">Reference ↗</a>
+      </div>
+    </div>
+    <section class="hero">
+      <div class="hero-inner">
+        <h1>Pega Web Embed in Action</h1>
+        <p>Pega’s center‑out business architecture makes experiences like Web Embed possible. Because business logic, workflows, and UI definitions are managed centrally in App Studio, updates made to the application are automatically reflected everywhere the experience is embedded—without rewriting or redeploying the host website.</p>
+        <div class="cta">
+          <a class="btn primary" href="#demo">Jump to live embed →</a>
+          <a class="btn pega" href="https://www.pega.com/" target="_blank" rel="noreferrer">Pega.com ↗</a>
+        </div>
+      </div>
+    </section>
+    <section class="panel" id="demo">
+      <div class="bar">
+        <div class="title">
+          <b>Live Demo: Pega Web Embed</b>
+          <span>Target container: <span class="kbd">#pega-embed-target</span></span>
+        </div>
+        <div class="toolbar">
+          <div class="chip" id="toggleState" title="Toggle placeholder/loaded state">
+            <span class="stateDot" id="stateDot" aria-hidden="true"></span>
+            <span id="stateText">Placeholder</span>
+          </div>
+          <div class="chip" id="toggleIframe">Use iFrame</div>
+          <div class="chip" id="clearLog">Clear log</div>
+        </div>
+      </div>
+      <div class="body">
+        <div class="stage" id="stage">
+          <div class="placeholder" id="placeholder">
+            <div class="inner">
+              <h3>Embed target is ready</h3>
+              <p>The Pega snippet is included in this file. Click "Loaded" to mount the Pega view. If you see a blank/black stage, check the log and browser console for CSP/auth issues.</p>
+            </div>
+          </div>
+          <div id="pega-embed-target"></div>
+          <iframe id="pega-embed-iframe" title="Pega iFrame fallback"></iframe>
+        </div>
+        <div class="log" id="log">[log ready]</div>
+      </div>
+    </section>
+    <footer id="diagnostics">
+      <div>© Demo host — co-branded header + embed diagnostics (original host content).</div>
+      <div>Tip: If logos or embed are blocked, check your editor’s CSP / network restrictions.</div>
+    </footer>
+  </div>
+
+ <script src='https://pega-bp-2.pegademo.com/prweb/PRRestService/c11nsvc/v1/pega-embed.js' ></script>
+<pega-embed id='theEmbed' 
+    action='createCase' 
+    caseTypeID='Uplus-Workshop-Work-ProductFeedback' 
+    themeID='pzBootesDark' 
+    casePage='assignment' 
+    appAlias='u-plus-retail' 
+    pegaServerUrl='https://pega-bp-2.pegademo.com/prweb/' 
+    autoReauth='true' 
+    authService='pega' 
+    clientId='14932570322671480917' 
+    style='width:100%'>
+    resizetype='stretch' 
+  >
+  </pega-embed>
+
+  <script>
+    const logEl = document.getElementById('log');
+    const iframe = document.getElementById('pega-embed-iframe');
+    const target = document.getElementById('pega-embed-target');
+    const placeholder = document.getElementById('placeholder');
+    const dot = document.getElementById('stateDot');
+    const stateText = document.getElementById('stateText');
+    
+    let loaded = false;
+    let iframeMode = false;
+
+    function log(msg){
+      logEl.textContent += "\n" + msg;
+    }
+
+    function applyState(){
+      placeholder.style.display = loaded ? "none" : "flex";
+      dot.classList.toggle("on", loaded);
+      stateText.textContent = loaded ? "Loaded" : "Placeholder";
+      
+      const pegaElement = document.getElementById('theEmbed');
+      
+      if (loaded && pegaElement && target.childElementCount === 0) {
+        log("[action] Appending Pega element to target container.");
+        target.appendChild(pegaElement);
+      }
+      
+      if (iframeMode){
+        iframe.style.display = "block";
+        target.style.display = "none";
+        log("[hint] iFrame mode is ON. Auto-resize will not work in this mode.");
+      } else {
+        iframe.style.display = "none";
+        target.style.display = "block";
+      }
+    }
+
+    // Surface common failures
+    window.addEventListener('error', (e) => log("[window.error] " + (e.message || e.type)));
+    window.addEventListener('unhandledrejection', (e) => log("[unhandledrejection] " + (e.reason?.message || e.reason)));
+    document.addEventListener('securitypolicyviolation', (e) => {
+      log("[CSP] blocked: " + e.violatedDirective + " | " + e.blockedURI);
+    });
+
+    // --- Toolbar Event Listeners ---
+    document.getElementById('toggleState').addEventListener('click', () => {
+      loaded = !loaded;
+      applyState();
+    });
+
+    document.getElementById('toggleIframe').addEventListener('click', () => {
+      iframeMode = !iframeMode;
+      applyState();
+    });
+
+    document.getElementById('clearLog').addEventListener('click', () => {
+      logEl.textContent = "[log cleared]";
+    });
+    
+    log("[hint] If embed stays blank/black, open DevTools → Console/Network and check CSP/auth/cookie blocks.");
+    
+    // Auto-load the demo for convenience
+    document.addEventListener('DOMContentLoaded', () => {
+      loaded = true;
+      applyState();
+      log("[init] Demo automatically set to 'Loaded' state.");
+    });
+    
+  </script>
+</body>
+</html>
